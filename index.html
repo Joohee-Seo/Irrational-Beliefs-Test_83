@@ -3,149 +3,62 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>마음침 심신치유 올인원 프로그램</title>
-  <!-- Chart.js CDN -->
+  <title>1단계: 비합리적 신념 검사</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    :root {
-      --primary: #4f46e5;
-      --primary-dark: #3730a3;
-      --primary-light: #e0e7ff;
-      --bg: #f8fafc;
-      --card-bg: #ffffff;
-      --text: #1e293b;
-      --text-muted: #64748b;
-      --border: #e2e8f0;
-      --bot-bg: #f1f5f9;
-      --user-bg: #4f46e5;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); line-height: 1.5; }
-    .container { max-width: 760px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
-    
-    /* 상단 프로그레스 바 */
-    .top-nav { background: #fff; padding: 14px 18px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50; display: flex; justify-content: space-between; align-items: center; }
-    .nav-title { font-size: 1rem; font-weight: 700; color: #0f172a; }
-    .step-badges { display: flex; gap: 6px; }
-    .badge { font-size: 0.75rem; padding: 3px 8px; border-radius: 999px; background: #e2e8f0; color: #64748b; font-weight: 600; }
-    .badge.active { background: var(--primary); color: #fff; }
-
-    /* 화면 섹션 제어 */
-    .section-view { display: none; padding: 16px; flex: 1; flex-direction: column; }
-    .section-view.active { display: flex; }
-
-    /* 1. 검사 화면 스타일 */
-    .guide-card { background: #fff; padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 16px; }
-    .scale-guide { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin-top: 10px; font-size: 0.78rem; text-align: center; }
+    :root { --primary: #4f46e5; --bg: #f8fafc; --card-bg: #fff; --text: #1e293b; --border: #e2e8f0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Pretendard", sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 16px; line-height: 1.5; }
+    .container { max-width: 760px; margin: 0 auto; }
+    header { background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 16px; }
+    .badge { background: var(--primary); color: #fff; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; }
+    .scale-guide { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin-top: 10px; font-size: 0.75rem; text-align: center; }
     .scale-guide div { background: #f1f5f9; padding: 6px 2px; border-radius: 6px; font-weight: 600; }
-    
+    .test-auto-btn { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; padding: 8px; border-radius: 6px; font-size: 0.82rem; font-weight: bold; cursor: pointer; margin-top: 10px; width: 100%; }
     .question-card { background: #fff; padding: 14px; border-radius: 10px; margin-bottom: 10px; border: 1px solid var(--border); }
-    .q-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 10px; }
+    .q-title { font-size: 0.92rem; font-weight: 600; margin-bottom: 10px; }
     .options { display: flex; gap: 4px; }
     .opt-btn { flex: 1; text-align: center; padding: 10px 2px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.8rem; cursor: pointer; user-select: none; }
     .opt-btn.checked { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: bold; }
-
-    /* 1-2. 결과 리포트 화면 */
-    .chart-box { max-width: 480px; margin: 16px auto; width: 100%; }
-    table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 0.85rem; background: #fff; border-radius: 8px; overflow: hidden; }
-    th, td { border: 1px solid var(--border); padding: 8px 6px; text-align: center; }
-    th { background: #f8fafc; font-weight: 600; }
-    .target-highlight { background: #eff6ff; font-weight: 700; color: #2563eb; }
-
-    /* 2 & 3. 챗봇 화면 스타일 */
-    .chat-view { height: calc(100vh - 120px); display: flex; flex-direction: column; background: #fff; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
-    .chat-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
-    .msg-wrap { display: flex; width: 100%; }
-    .msg-wrap.bot { justify-content: flex-start; }
-    .msg-wrap.user { justify-content: flex-end; }
-    .msg-box { max-width: 82%; padding: 12px 14px; border-radius: 14px; font-size: 0.93rem; line-height: 1.55; white-space: pre-wrap; word-break: break-word; }
-    .msg-wrap.bot .msg-box { background: var(--bot-bg); color: #0f172a; border-bottom-left-radius: 3px; border: 1px solid var(--border); }
-    .msg-wrap.user .msg-box { background: var(--user-bg); color: #fff; border-bottom-right-radius: 3px; }
-    
-    .chat-input-bar { border-top: 1px solid var(--border); padding: 10px; display: flex; gap: 8px; background: #fff; }
-    textarea { flex: 1; border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 0.95rem; resize: none; height: 42px; outline: none; }
-    textarea:focus { border-color: var(--primary); }
-    .send-btn { background: var(--primary); color: #fff; border: none; width: 44px; height: 42px; border-radius: 8px; cursor: pointer; font-size: 1.1rem; }
-
-    /* 공통 버튼 */
-    .btn-main { background: var(--primary); color: #fff; border: none; padding: 14px 24px; font-size: 1rem; font-weight: 700; border-radius: 8px; cursor: pointer; width: 100%; margin-top: 14px; }
-    .btn-main:hover { background: var(--primary-dark); }
-    
-    /* 리포트 카드 */
-    .report-card { background: #f8fafc; border: 1.5px solid var(--primary-light); border-radius: 10px; padding: 14px; margin-top: 10px; font-size: 0.88rem; }
-    .report-card h4 { color: #312e81; margin-bottom: 8px; border-bottom: 1px solid #c7d2fe; padding-bottom: 4px; }
-    .report-card p { margin-bottom: 6px; }
+    .btn-main { background: var(--primary); color: #fff; border: none; padding: 14px 20px; font-size: 1rem; font-weight: 700; border-radius: 8px; cursor: pointer; width: 100%; margin: 16px 0; }
+    #result-area { display: none; background: #fff; padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-top: 20px; }
+    .chart-box { max-width: 480px; margin: 16px auto; }
+    table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 0.82rem; }
+    th, td { border: 1px solid var(--border); padding: 8px 4px; text-align: center; }
+    th { background: #f8fafc; }
   </style>
 </head>
 <body>
-
 <div class="container">
-  <!-- 상단 단계 네비게이션 -->
-  <header class="top-nav">
-    <div class="nav-title" id="page-title">1. 비합리적 신념 검사</div>
-    <div class="step-badges">
-      <span class="badge active" id="badge-1">1.진단</span>
-      <span class="badge" id="badge-2">2.거사</span>
-      <span class="badge" id="badge-3">3.양정</span>
+  <header>
+    <span class="badge">1단계: 진단</span>
+    <h1 style="font-size: 1.25rem; margin: 8px 0 4px;">비합리적 신념 검사 (83문항)</h1>
+    <p style="font-size: 0.85rem; color: #64748b;">평소 자신의 생각과 가장 가까운 번호를 선택해주세요.</p>
+    <div class="scale-guide">
+      <div>1.전혀아님</div><div>2.아닌편</div><div>3.보통</div><div>4.그런편</div><div>5.매우그럼</div>
     </div>
+    <button type="button" class="test-auto-btn" onclick="quickFillForTesting()">⚡ [빠른 테스트] 83문항 자동 채우기</button>
   </header>
 
-  <!-- 1. 검사 문항 화면 -->
-  <section id="view-survey" class="section-view active">
-    <div class="guide-card">
-      <h2 style="font-size:1.15rem; margin-bottom:6px;">비합리적 신념 검사 (83문항)</h2>
-      <p style="font-size:0.85rem; color:var(--text-muted);">평소 생각과 얼마나 일치하는지 골라주세요. 맞거나 틀린 답은 없습니다.</p>
-      <div class="scale-guide">
-        <div>1.전혀아님</div><div>2.아닌편</div><div>3.보통</div><div>4.그런편</div><div>5.매우그럼</div>
-      </div>
-    </div>
-    <div id="survey-list"></div>
-    <button class="btn-main" onclick="finishSurvey()">검사 제출 및 결과 확인하기</button>
-  </section>
+  <div id="survey-list"></div>
+  <button class="btn-main" onclick="finishSurvey()">검사 제출 및 결과 확인</button>
 
-  <!-- 1-2. 검사 결과 및 시작 선택 화면 -->
-  <section id="view-result" class="section-view">
-    <div class="guide-card" style="text-align: center;">
-      <h2 style="font-size:1.2rem; color:#0f172a;">신념 프로파일 분석 결과</h2>
-      <p style="font-size:0.85rem; color:var(--text-muted); margin-top:4px;">가장 점수가 높은 영역이 마음 치유의 핵심 작업 대상입니다.</p>
-      <div class="chart-box"><canvas id="radarChart"></canvas></div>
-      <table id="score-table">
-        <thead><tr><th>영역</th><th>문항수</th><th>평균(5점)</th><th>상태</th></tr></thead>
-        <tbody></tbody>
-      </table>
-      <div style="background:#eef2ff; border-radius:8px; padding:12px; margin-top:14px; text-align:left;">
-        <strong style="color:var(--primary);">💡 치유 안내:</strong>
-        <p style="font-size:0.88rem; margin-top:4px;" id="highest-alert-text"></p>
-      </div>
-      <button class="btn-main" onclick="startGeosaSession()">이 신념으로 [거사(居邪) 과정] 시작하기 ➔</button>
+  <section id="result-area">
+    <h2 style="font-size:1.2rem; text-align:center;">신념 프로파일 분석 결과</h2>
+    <div class="chart-box"><canvas id="radarChart"></canvas></div>
+    <table id="score-table">
+      <thead><tr><th>영역</th><th>문항수</th><th>평균점수</th><th>상태</th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <div style="background:#eef2ff; border-radius:8px; padding:12px; margin-top:14px;">
+      <strong style="color:var(--primary);">💡 치유 타깃:</strong>
+      <p style="font-size:0.88rem; margin-top:4px;" id="highest-alert-text"></p>
     </div>
-  </section>
-
-  <!-- 2. 거사(居邪) 챗봇 화면 -->
-  <section id="view-geosa" class="section-view">
-    <div class="chat-view">
-      <div class="chat-messages" id="geosa-chat-box"></div>
-      <div class="chat-input-bar">
-        <textarea id="geosa-input" placeholder="답변을 입력하세요..." onkeydown="handleChatKey(event, 'geosa')"></textarea>
-        <button class="send-btn" onclick="sendChatMessage('geosa')">➤</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- 3. 양정(養正) 챗봇 화면 -->
-  <section id="view-yangjeong" class="section-view">
-    <div class="chat-view">
-      <div class="chat-messages" id="yangjeong-chat-box"></div>
-      <div class="chat-input-bar">
-        <textarea id="yangjeong-input" placeholder="답변을 입력하세요..." onkeydown="handleChatKey(event, 'yangjeong')"></textarea>
-        <button class="send-btn" onclick="sendChatMessage('yangjeong')">➤</button>
-      </div>
-    </div>
+    <button class="btn-main" style="background:#059669;" onclick="goToGeosa()">2단계: 거사(居邪) 치유 세션으로 이동하기 ➔</button>
   </section>
 </div>
 
 <script>
-/* --- 1. 83문항 전체 데이터 --- */
 const questions = [
   { id: 1, text: "다른 사람들이 나를 인정해 주는 것이 나에게는 중요하다.", isRev: false },
   { id: 2, text: "나는 무엇이든지 실패하는 것을 싫어 한다.", isRev: false },
@@ -245,7 +158,6 @@ const subscales = [
   { name: "완벽한 해결", items: [9, 18, 38, 55, 63, 73, 83] }
 ];
 
-/* 문항 화면 생성 */
 const surveyList = document.getElementById('survey-list');
 questions.forEach(q => {
   const card = document.createElement('div');
@@ -269,7 +181,15 @@ function chooseOption(qId, val) {
   document.getElementById(`opt-${qId}-${val}`).classList.add('checked');
 }
 
-let topBelief = { name: "개인적 완벽성", avg: 0 };
+function quickFillForTesting() {
+  questions.forEach(q => {
+    const rand = Math.floor(Math.random() * 5) + 1;
+    chooseOption(q.id, rand);
+  });
+  alert('83문항이 모두 채워졌습니다. 맨 아래 [검사 제출 및 결과 확인]을 눌러주세요.');
+}
+
+let topBelief = { name: "개인적 완벽성", avg: 4.2 };
 let radarChartInstance = null;
 
 function finishSurvey() {
@@ -281,7 +201,6 @@ function finishSurvey() {
     return;
   }
 
-  // 역채점 및 평균 연산
   const labels = [], avgs = [];
   const tbody = document.querySelector('#score-table tbody');
   tbody.innerHTML = '';
@@ -307,15 +226,15 @@ function finishSurvey() {
   });
 
   topBelief = highest;
+  localStorage.setItem('topBeliefName', topBelief.name);
+  localStorage.setItem('topBeliefAvg', topBelief.avg);
+
   document.getElementById('highest-alert-text').innerHTML = 
-    `현재 가장 두드러지게 나타난 영역은 <strong>[${topBelief.name}]</strong> (평균 ${topBelief.avg}점)입니다. 이 신념을 타깃으로 깊이 있는 거사 및 양정 세션을 진행합니다.`;
+    `현재 가장 두드러진 영역은 <strong>[${topBelief.name}]</strong> (평균 ${topBelief.avg}점)입니다.`;
 
-  // 화면 전환 및 차트 렌더링
-  switchView('view-result');
-  renderRadarChart(labels, avgs);
-}
+  document.getElementById('result-area').style.display = 'block';
+  document.getElementById('result-area').scrollIntoView({ behavior: 'smooth' });
 
-function renderRadarChart(labels, avgs) {
   const ctx = document.getElementById('radarChart').getContext('2d');
   if(radarChartInstance) radarChartInstance.destroy();
   radarChartInstance = new Chart(ctx, {
@@ -323,7 +242,7 @@ function renderRadarChart(labels, avgs) {
     data: {
       labels: labels,
       datasets: [{
-        label: '신념 강도 (1~5점)',
+        label: '신념 점수 (1~5점)',
         data: avgs,
         fill: true,
         backgroundColor: 'rgba(79, 70, 229, 0.2)',
@@ -331,153 +250,12 @@ function renderRadarChart(labels, avgs) {
         pointBackgroundColor: 'rgb(79, 70, 229)'
       }]
     },
-    options: {
-      scales: { r: { min: 1, max: 5, ticks: { stepSize: 1 } } }
-    }
+    options: { scales: { r: { min: 1, max: 5, ticks: { stepSize: 1 } } } }
   });
 }
 
-/* --- 2 & 3. 거사 / 양정 챗봇 플로우 --- */
-const geosaFlow = [
-  { step: 1, prompt: (b) => `안녕하세요. 방금 검사에서 가장 높게 확인된 [${b.name}] 신념을 마주하고 편안하게 흘려보내는 거사(居邪) 여정입니다.\n\n이 신념을 본인만의 평소 말투나 생각으로 표현한다면 어떤 문장인가요?\n(예: "실패하면 낙오자다", "모두에게 잘 보여야 한다")` },
-  { step: 2, prompt: () => `그 신념과 불편한 감정이 강하게 올라왔던 '최근의 유발사건'은 무엇이었나요?\n그때 몸에서 느껴진 감각(가슴/배 등)과 떠오르는 이미지(취상: 모양, 색, 기운)가 있다면 함께 적어주세요. (불편감 점수 0~10점)` },
-  { step: 3, prompt: () => `과거에도 이와 비슷하게 '심란함이나 두려움'을 강하게 느꼈던 핵심 기억이나 장면(원발사건)이 떠오르시나요?\n(어릴 적 기억, 사건, 혹은 강하게 각인된 장면 등)\n그때 나를 누르던 이미지(취상: 예: 검은 돌덩이 등)와 불편감 점수(0~10점)를 알려주세요.` },
-  { step: 4, prompt: () => `그 당시 어린(또는 과거의) 나는 그 사건을 어떻게 해석하고 의미를 부여했나요?\n(예: "내가 실패하면 다들 나를 버리고 떠날 것이다")` },
-  { step: 5, prompt: () => `그 해석을 그대로 믿고 살다 보니, 내 삶이나 관계에서 어떤 두려운 미래(비극적인 결과)가 일어날 것 같다고 예측했나요?` },
-  { step: 6, prompt: () => `그런 불행한 일이 일어나지 않도록 막기 위해, 나는 평소 어떤 태도로 애써왔나요?\n그리고 그렇게 살아온 나 자신을 비유(취상)한다면 어떤 모습인가요? (예: 바스라질 것 같은 낙엽 등)` },
-  { step: 7, prompt: () => `나를 그렇게 통제하고 채찍질해 온 마음은, 실은 나를 무엇으로부터 지키고 보호하려 했던 걸까요? (선의적 의도)\n그 애씀을 통해 진짜로 누리고 싶었던 감정(이차적 이익: 사랑, 안전감 등)은 무엇이었나요?` },
-  { step: 8, prompt: () => `나를 지키려 애써온 그 마음을 따뜻하게 안아줍니다. 이제 그 무거운 이미지와 긴장을 가볍게 흘려보낼 시간입니다.\n\n편안한 호흡과 함께 가슴과 배에 의념을 두고, 준비된 경혈 지압이나 정심주(正心呪) 호흡을 천천히 3~5회 반복해 보세요.\n내쉬는 숨마다 어두운 기운이 빠져나감을 상상합니다.\n\n마치셨다면 '완료'라고 입력해 주세요.` },
-  { step: 9, prompt: () => `호흡을 마친 지금, 처음에 나를 무겁게 누르던 그 기억의 이미지(취상)와 감정은 어떻게 달라지셨나요?\n불편감 점수(0~10)는 몇 점으로 내려갔는지, 새로운 해석과 함께 나눠주세요.` }
-];
-
-const yangjeongFlow = [
-  { step: 1, prompt: (b, gData) => `탁월하게 정화하셨습니다! 이제 비워진 자리에 본래의 건강한 생기와 온기를 채우는 [양정(養正) 과정]으로 나아갑니다.\n\n먼저 [정기 4질문] 중 '없다치고' 질문입니다.\n"원발사건에 얽혀있던 그 두려움과 무거운 기운이 완전히 사라졌다고 치면, 내 마음에 어떤 편안한 기분이 느껴지나요?"` },
-  { step: 2, prompt: () => `두 번째 '됐다치고' 질문입니다.\n"그때 모든 일이 내가 바라던 대로 정말 잘 되었다고 친다면, 어떤 벅차고 따뜻한 감정이 드나요?"` },
-  { step: 3, prompt: () => `세 번째 '뒤집기' 질문입니다.\n"과거의 그 두려움·불안과 완전히 반대되는 내 본연의 긍정적인 감정(자비, 안전함, 자유로움 등)은 무엇인가요?"` },
-  { step: 4, prompt: () => `네 번째 '정기확충' 질문입니다.\n"일상에서 이런 따뜻함과 자유로움을 생생하게 느꼈던 즐거웠던 기억 한 장면을 떠올려보세요. 어떤 순간인가요?"` },
-  { step: 5, prompt: () => `지금까지 찾은 감정들(안전함, 기쁨 등) 중 '가장 나를 충만하게 하는 감정' 하나를 고르고, 그 충만함을 눈앞의 따뜻한 장면(긍정 취상: 예: 봄햇살 아래 뛰노는 아이, 따뜻한 벽난로 등)으로 그려본다면 어떤 모습인가요?` },
-  { step: 6, prompt: () => `그 따뜻한 취상(이미지)을 바탕으로 나만의 '양정 입지확언'을 완성해봅니다.\n\n(예: "나는 따뜻한 온기와 사랑을 품은 사람이다", "작은 실패는 더 큰 성장의 밑거름이 된다")\n\n마음 깊이 와닿는 나만의 확언 문장을 적어주세요.` },
-  { step: 7, prompt: () => `그 긍정 취상과 입지확언을 가슴에 품고, 편안히 경혈을 지압하며 정심주 호흡을 3회 깊게 진행합니다.\n온몸에 따뜻한 생기가 차오르는 느낌을 충분히 누린 뒤 '완료'라고 적어주세요.` }
-];
-
-let currentGeosaIdx = 0, currentYangjeongIdx = 0;
-const geosaData = {}, yangjeongData = {};
-
-function startGeosaSession() {
-  switchView('view-geosa');
-  document.getElementById('badge-2').classList.add('active');
-  document.getElementById('page-title').innerText = `2. 거사(居邪) 세션: [${topBelief.name}]`;
-  appendChatMsg('geosa-chat-box', geosaFlow[0].prompt(topBelief), 'bot');
-}
-
-function startYangjeongSession() {
-  switchView('view-yangjeong');
-  document.getElementById('badge-3').classList.add('active');
-  document.getElementById('page-title').innerText = `3. 양정(養正) 세션: 생기 확충`;
-  appendChatMsg('yangjeong-chat-box', yangjeongFlow[0].prompt(topBelief, geosaData), 'bot');
-}
-
-function handleChatKey(e, mode) {
-  if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMessage(mode); }
-}
-
-function sendChatMessage(mode) {
-  const inputEl = document.getElementById(`${mode}-input`);
-  const chatBoxId = `${mode}-chat-box`;
-  const text = inputEl.value.trim();
-  if(!text) return;
-
-  appendChatMsg(chatBoxId, text, 'user');
-  inputEl.value = '';
-
-  if(mode === 'geosa') {
-    geosaData[geosaFlow[currentGeosaIdx].step] = text;
-    currentGeosaIdx++;
-    if(currentGeosaIdx < geosaFlow.length) {
-      setTimeout(() => {
-        appendChatMsg(chatBoxId, geosaFlow[currentGeosaIdx].prompt(topBelief), 'bot');
-      }, 400);
-    } else {
-      // 거사 완료 리포트 및 양정 전환 버튼
-      setTimeout(() => {
-        renderGeosaComplete(chatBoxId);
-      }, 500);
-    }
-  } else {
-    yangjeongData[yangjeongFlow[currentYangjeongIdx].step] = text;
-    currentYangjeongIdx++;
-    if(currentYangjeongIdx < yangjeongFlow.length) {
-      setTimeout(() => {
-        appendChatMsg(chatBoxId, yangjeongFlow[currentYangjeongIdx].prompt(topBelief, geosaData), 'bot');
-      }, 400);
-    } else {
-      setTimeout(() => {
-        renderFinalSummary(chatBoxId);
-      }, 500);
-    }
-  }
-}
-
-function appendChatMsg(boxId, text, sender) {
-  const box = document.getElementById(boxId);
-  const wrap = document.createElement('div');
-  wrap.className = `msg-wrap ${sender}`;
-  const m = document.createElement('div');
-  m.className = 'msg-box';
-  m.innerText = text;
-  wrap.appendChild(m);
-  box.appendChild(wrap);
-  box.scrollTop = box.scrollHeight;
-}
-
-function renderGeosaComplete(boxId) {
-  const box = document.getElementById(boxId);
-  const wrap = document.createElement('div');
-  wrap.className = 'msg-wrap bot';
-  wrap.innerHTML = `
-    <div class="msg-box" style="max-width:94%;">
-      <strong>🌿 거사(居邪) 작업 완료</strong>
-      <div class="report-card">
-        <h4>거사 결과 요약</h4>
-        <p><strong>타깃 신념:</strong> ${topBelief.name}</p>
-        <p><strong>원발사건/취상:</strong> ${geosaData[3] || '-'}</p>
-        <p><strong>선의적 의도:</strong> ${geosaData[7] || '-'}</p>
-        <p><strong>정화 후 변화:</strong> ${geosaData[9] || '-'}</p>
-      </div>
-      <button class="btn-main" onclick="startYangjeongSession()">비워진 자리에 긍정 에너지를 채우는 [양정(養正) 과정] 시작 ➔</button>
-    </div>
-  `;
-  box.appendChild(wrap);
-  box.scrollTop = box.scrollHeight;
-}
-
-function renderFinalSummary(boxId) {
-  const box = document.getElementById(boxId);
-  const wrap = document.createElement('div');
-  wrap.className = 'msg-wrap bot';
-  wrap.innerHTML = `
-    <div class="msg-box" style="max-width:94%;">
-      <strong>✨ 심신치유 올인원 세션 최종 완료!</strong>
-      <div class="report-card" style="border-color:#38bdf8; background:#f0f9ff;">
-        <h4 style="color:#0369a1;">나의 치유 & 입지확언 카드</h4>
-        <p><strong>핵심 비합리적 신념:</strong> ${topBelief.name} (${topBelief.avg}점)</p>
-        <p><strong>지키려 했던 선의적 의도:</strong> ${geosaData[7] || '-'}</p>
-        <p><strong>본연의 긍정 취상:</strong> ${yangjeongData[5] || '-'}</p>
-        <p style="margin-top:8px; font-size:1rem; color:#0c4a6e;"><strong>🌱 나의 긍정 입지확언:</strong><br>"${yangjeongData[6] || '-'}"</p>
-      </div>
-      <p style="margin-top:10px; font-size:0.85rem; color:#64748b;">
-        수고 많으셨습니다. 언제든 이 화면을 캡처하여 일상에서 확언과 호흡을 되새겨보세요.
-      </p>
-    </div>
-  `;
-  box.appendChild(wrap);
-  box.scrollTop = box.scrollHeight;
-}
-
-function switchView(viewId) {
-  document.querySelectorAll('.section-view').forEach(v => v.classList.remove('active'));
-  document.getElementById(viewId).classList.add('active');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+function goToGeosa() {
+  window.location.href = "geosa.html";
 }
 </script>
 </body>
