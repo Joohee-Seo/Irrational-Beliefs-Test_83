@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>3단계: 양정(養正) 생기 확충</title>
+  <style>
+    :root { --primary: #2563eb; --bg: #f8fafc; --card-bg: #fff; --text: #1e293b; --border: #e2e8f0; --bot-bg: #f1f5f9; --user-bg: #2563eb; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Pretendard", sans-serif; }
+    body { background-color: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+    header { background: #fff; padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .badge { background: var(--primary); color: #fff; padding: 3px 8px; border-radius: 999px; font-size: 0.75rem; font-weight: bold; }
+    .chat-view { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #fff; max-width: 760px; margin: 0 auto; width: 100%; }
+    .chat-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+    .msg-wrap { display: flex; width: 100%; }
+    .msg-wrap.bot { justify-content: flex-start; }
+    .msg-wrap.user { justify-content: flex-end; }
+    .msg-box { max-width: 85%; padding: 12px 14px; border-radius: 14px; font-size: 0.92rem; line-height: 1.55; white-space: pre-wrap; }
+    .msg-wrap.bot .msg-box { background: var(--bot-bg); color: #0f172a; border-bottom-left-radius: 3px; border: 1px solid var(--border); }
+    .msg-wrap.user .msg-box { background: var(--user-bg); color: #fff; border-bottom-right-radius: 3px; }
+    .chat-input-bar { border-top: 1px solid var(--border); padding: 10px; display: flex; gap: 8px; background: #fff; }
+    textarea { flex: 1; border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 0.95rem; resize: none; height: 42px; outline: none; }
+    .send-btn { background: var(--primary); color: #fff; border: none; width: 44px; height: 42px; border-radius: 8px; cursor: pointer; font-size: 1.1rem; }
+    .report-card { background: #f0f9ff; border: 1.5px solid #bae6fd; border-radius: 10px; padding: 14px; margin-top: 10px; font-size: 0.88rem; }
+    .btn-restart { background: #475569; color: #fff; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; margin-top: 12px; font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <span class="badge">3단계: 양정(養正)</span>
+      <strong style="margin-left: 6px; font-size: 0.95rem;">생기 확충 및 입지확언</strong>
+    </div>
+  </header>
+
+  <div class="chat-view">
+    <div class="chat-messages" id="chat-box"></div>
+    <div class="chat-input-bar">
+      <textarea id="chat-input" placeholder="답변을 입력하세요..." onkeydown="handleKeyDown(event)"></textarea>
+      <button class="send-btn" onclick="sendMessage()">➤</button>
+    </div>
+  </div>
+
+<script>
+const topBeliefName = localStorage.getItem('topBeliefName') || '개인적 완벽성';
+const geosaData = JSON.parse(localStorage.getItem('geosaData') || '{}');
+
+const yangjeongFlow = [
+  { step: 1, prompt: `정화 작업을 훌륭히 마치셨습니다! 이제 비워진 자리에 본래의 건강한 생기와 온기를 채우는 [양정(養正) 과정]으로 나아갑니다.\n\n[정기 4질문] 첫 번째, '없다치고' 질문입니다.\n"원발사건에 얽혀있던 그 두려움과 무거운 기운이 완전히 사라졌다고 치면, 마음에 어떤 편안한 기분이 느껴지나요?"` },
+  { step: 2, prompt: `두 번째 '됐다치고' 질문입니다.\n"그때 모든 일이 내가 바라던 대로 정말 잘 되었다고 친다면, 어떤 벅차고 따뜻한 감정이 드나요?"` },
+  { step: 3, prompt: `세 번째 '뒤집기' 질문입니다.\n"과거의 그 두려움·불안과 완전히 반대되는 내 본연의 긍정적인 감정(자비, 안전함, 자유로움 등)은 무엇인가요?"` },
+  { step: 4, prompt: `네 번째 '정기확충' 질문입니다.\n"일상에서 이런 따뜻함과 자유로움을 생생하게 느꼈던 즐거웠던 기억 한 장면을 떠올려보세요. 어떤 순간인가요?"` },
+  { step: 5, prompt: `지금까지 찾은 감정들 중 '가장 나를 충만하게 하는 감정' 하나를 고르고, 그 충만함을 눈앞의 따뜻한 장면(긍정 취상: 예: 봄햇살 아래 뛰노는 아이 등)으로 그려본다면 어떤 모습인가요?` },
+  { step: 6, prompt: `그 따뜻한 취상(이미지)을 바탕으로 나만의 '양정 입지확언'을 완성해봅니다.\n\n(예: "나는 따뜻한 온기를 나누는 사람이다", "작은 실패는 더 큰 성장의 기틀이 된다")\n\n마음에 와닿는 나만의 확언 문장을 적어주세요.` },
+  { step: 7, prompt: `그 긍정 취상과 입지확언을 가슴에 품고, 편안히 경혈 지압과 정심주 호흡을 3회 깊게 진행합니다.\n온몸에 따뜻한 생기가 차오르는 것을 충분히 느끼신 후 '완료'라고 적어주세요.` }
+];
+
+let currentIdx = 0;
+const recorded = {};
+const chatBox = document.getElementById('chat-box');
+const inputEl = document.getElementById('chat-input');
+
+function appendMsg(text, sender) {
+  const wrap = document.createElement('div');
+  wrap.className = `msg-wrap ${sender}`;
+  const m = document.createElement('div');
+  m.className = 'msg-box';
+  m.innerText = text;
+  wrap.appendChild(m);
+  chatBox.appendChild(wrap);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function handleKeyDown(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+
+function sendMessage() {
+  const text = inputEl.value.trim();
+  if(!text) return;
+  appendMsg(text, 'user');
+  inputEl.value = '';
+
+  recorded[yangjeongFlow[currentIdx].step] = text;
+  currentIdx++;
+
+  if(currentIdx < yangjeongFlow.length) {
+    setTimeout(() => { appendMsg(yangjeongFlow[currentIdx].prompt, 'bot'); }, 350);
+  } else {
+    setTimeout(() => { renderFinalSummary(); }, 400);
+  }
+}
+
+function renderFinalSummary() {
+  const wrap = document.createElement('div');
+  wrap.className = 'msg-wrap bot';
+  wrap.innerHTML = `
+    <div class="msg-box" style="max-width:94%;">
+      <strong>✨ 심신치유 올인원 세션 최종 완료!</strong>
+      <div class="report-card">
+        <h4 style="color:#0369a1; margin-bottom:8px; border-bottom:1px solid #bae6fd; padding-bottom:4px;">나의 치유 & 입지확언 카드</h4>
+        <p><strong>핵심 비합리적 신념:</strong> ${topBeliefName}</p>
+        <p><strong>지키려 했던 선의적 의도:</strong> ${geosaData[7] || '-'}</p>
+        <p><strong>본연의 긍정 취상:</strong> ${recorded[5] || '-'}</p>
+        <p style="margin-top:8px; font-size:1rem; color:#0c4a6e;"><strong>🌱 나의 긍정 입지확언:</strong><br>"${recorded[6] || '-'}"</p>
+      </div>
+      <p style="margin-top:10px; font-size:0.85rem; color:#64748b;">
+        수고 많으셨습니다. 이 화면을 캡처하여 일상에서 호흡과 확언을 되새겨보세요.
+      </p>
+      <button class="btn-restart" onclick="location.href='index.html'">처음 검사 화면으로 돌아가기</button>
+    </div>
+  `;
+  chatBox.appendChild(wrap);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+appendMsg(yangjeongFlow[0].prompt, 'bot');
+</script>
+</body>
+</html>
