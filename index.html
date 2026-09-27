@@ -14,7 +14,14 @@
     .badge { background: var(--primary); color: #fff; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; }
     .scale-guide { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin-top: 10px; font-size: 0.75rem; text-align: center; }
     .scale-guide div { background: #f1f5f9; padding: 6px 2px; border-radius: 6px; font-weight: 600; }
-    .test-auto-btn { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; padding: 8px; border-radius: 6px; font-size: 0.82rem; font-weight: bold; cursor: pointer; margin-top: 10px; width: 100%; }
+    .intro { background: #fff; padding: 24px; border: 1px solid var(--border); border-radius: 14px; margin: 16px 0; }
+    .intro h2 { font-size: 1.3rem; margin: 8px 0; }
+    .intro p { margin: 10px 0; }
+    .intro details { padding: 12px 0; border-top: 1px solid var(--border); }
+    .intro summary { cursor: pointer; font-weight: 600; }
+    .intro li { margin: 8px 0; }
+    #assessment { display: none; }
+    .opt-btn { background: #fff; }
     .question-card { background: #fff; padding: 14px; border-radius: 10px; margin-bottom: 10px; border: 1px solid var(--border); }
     .q-title { font-size: 0.92rem; font-weight: 600; margin-bottom: 10px; }
     .options { display: flex; gap: 4px; }
@@ -30,33 +37,38 @@
 </head>
 <body>
 <div class="container">
-  <header>
-    <span class="badge">1단계: 진단</span>
-    <h1 style="font-size: 1.25rem; margin: 8px 0 4px;">비합리적 신념 검사 (83문항)</h1>
-    <p style="font-size: 0.85rem; color: #64748b;">평소 자신의 생각과 가장 가까운 번호를 선택해주세요.</p>
-    <div class="scale-guide">
-      <div>1.전혀아님</div><div>2.아닌편</div><div>3.보통</div><div>4.그런편</div><div>5.매우그럼</div>
-    </div>
-    <button type="button" class="test-auto-btn" onclick="quickFillForTesting()">⚡ [빠른 테스트] 83문항 자동 채우기</button>
-    <button type="button" class="btn-main" style="background:#059669; margin-top:8px;" onclick="location.href='geosa.html'">🌿 1단계 검사 건너뛰고 바로 [거사(居邪) 세션] 시작하기 ➔</button>
-  </header>
-
-  <div id="survey-list"></div>
-  <button class="btn-main" onclick="finishSurvey()">검사 제출 및 결과 확인</button>
-
-  <section id="result-area">
-    <h2 style="font-size:1.2rem; text-align:center;">신념 프로파일 분석 결과</h2>
-    <div class="chart-box"><canvas id="radarChart"></canvas></div>
-    <table id="score-table">
-      <thead><tr><th>영역</th><th>문항수</th><th>평균점수</th><th>상태</th></tr></thead>
-      <tbody></tbody>
-    </table>
-    <div style="background:#eef2ff; border-radius:8px; padding:12px; margin-top:14px;">
-      <strong style="color:var(--primary);">💡 치유 타깃:</strong>
-      <p style="font-size:0.88rem; margin-top:4px;" id="highest-alert-text"></p>
-    </div>
-    <button class="btn-main" style="background:#059669;" onclick="goToGeosa()">2단계: 거사(居邪) 치유 세션으로 이동하기 ➔</button>
+  <section class="intro" id="intro">
+    <span class="badge">이해통찰 과정 · 시작하기</span>
+    <h1 style="font-size:1.6rem;margin:12px 0;">내 생각의 패턴을 살펴보기</h1>
+    <p>같은 일을 겪어도 그 일을 어떻게 해석하는지에 따라 감정과 반응이 달라질 수 있습니다. <strong>비합리적 신념</strong>은 “반드시 그래야만 한다”처럼 경직된 생각의 패턴을 살펴보는 말입니다. 생각이 떠오른다는 사실만으로 잘못되었다는 뜻은 아닙니다.</p>
+    <p>예를 들어 “인정받고 싶다”는 자연스러운 바람이지만, “모든 사람이 나를 인정해야만 나는 가치 있다”는 생각이 반복되면 스스로에게 부담을 줄 수 있습니다.</p>
+    <details><summary>자료에 나온 비합리적 신념의 예 보기</summary>
+      <ol><li>중요한 사람 모두에게 사랑과 인정을 받아야 가치 있다.</li><li>의지할 만한 강한 누군가가 반드시 있어야 한다.</li><li>타인의 문제에 함께 괴로워해야 한다.</li><li>나쁜 사람은 비난받고 처벌받아야 한다.</li><li>완벽하게 유능하고 성공해야 가치 있다.</li><li>뜻대로 되지 않으면 끔찍한 일이다.</li><li>모든 문제에는 완벽한 해결책이 있어야 한다.</li><li>세상은 반드시 공평해야 한다.</li><li>행복은 외부 사건이 결정하고 통제할 수 없다.</li><li>어려움은 맞서기보다 피하는 편이 낫다.</li><li>위험한 일이 일어날 가능성을 늘 걱정해야 한다.</li><li>과거의 일이 현재 행동을 결정한다.</li></ol>
+      <p style="font-size:.85rem;color:#64748b;">요약: 첨부된 「비합리적인 신념 12가지」. 아래 검사의 10개 영역과 일대일로 대응하는 목록은 아닙니다.</p>
+    </details>
+    <p style="font-size:.88rem;color:#64748b;">먼저 83문항으로 자신의 경향을 살펴본 뒤 거사(居邪)와 양정(養正)으로 이어갑니다. 검사는 진단 도구나 치료 결과 판정이 아니며, 원치 않는 질문과 기억은 건너뛸 수 있습니다.</p>
+    <button class="btn-main" onclick="startAssessment()">83문항 검사 시작</button>
+    <button class="btn-main" style="background:#059669;margin-top:0" onclick="location.href='geosa.html'">검사 없이 거사 과정 시작</button>
   </section>
+  <div id="assessment">
+    <header>
+      <span class="badge">1단계 · 생각의 경향 살펴보기</span>
+      <h2 style="font-size:1.25rem;margin:8px 0 4px;">비합리적 신념 검사 (83문항)</h2>
+      <p style="font-size:.85rem;color:#64748b;">평소 자신의 생각과 가까운 번호를 선택해 주세요. 3점은 “어느 쪽도 아니다 / 잘 모르겠다”입니다.</p>
+      <div class="scale-guide"><div>1. 전혀 아님</div><div>2. 아닌 편</div><div>3. 중간/모름</div><div>4. 그런 편</div><div>5. 매우 그럼</div></div>
+    </header>
+    <p id="answer-progress" style="margin:12px 0;color:#475569" aria-live="polite">0 / 83문항 응답</p>
+    <div id="survey-list"></div>
+    <button class="btn-main" onclick="finishSurvey()">검사 결과 보기</button>
+    <section id="result-area">
+      <h2 style="font-size:1.2rem;text-align:center;">신념 영역별 점수</h2>
+      <p style="font-size:.86rem;color:#64748b;margin-top:12px;">각 영역 평균은 1~5점입니다. 높고 낮음의 임상 기준 없이, 자신이 더 살펴보고 싶은 영역을 고르는 참고 정보입니다.</p>
+      <div class="chart-box"><canvas id="radarChart"></canvas></div>
+      <table id="score-table"><thead><tr><th>영역</th><th>문항수</th><th>평균점수</th></tr></thead><tbody></tbody></table>
+      <div style="background:#eef2ff;border-radius:8px;padding:12px;margin-top:14px;"><strong style="color:var(--primary);">가장 높게 응답한 영역</strong><p style="font-size:.88rem;margin-top:4px;" id="highest-alert-text"></p><label for="belief-select">거사에서 탐색할 영역을 직접 고를 수도 있습니다.</label><select id="belief-select" style="display:block;margin-top:8px;padding:10px;width:100%;border:1px solid #cbd5e1;border-radius:6px"></select></div>
+      <button class="btn-main" style="background:#059669;" onclick="goToGeosa()">2단계 · 거사 과정으로</button>
+    </section>
+  </div>
 </div>
 
 <script>
@@ -130,7 +142,7 @@ const questions = [
   { id: 67, text: "나는 책임지는 것을 싫어한다.", isRev: false },
   { id: 68, text: "아주 오랫동안 슬픔에 잠겨 있을 하등의 이유가 없다.", isRev: true },
   { id: 69, text: "나는 죽음이나 핵전쟁과 같은 문제에 대해 별로 생각하지 않는다.", isRev: true },
-  { id: 70, text: "사람들은 극복해야 할 문제가 있고, 그것에 대해 도전을 할 때 가장 행복하다.", isRev: false },
+  { id: 70, text: "사람들은 극복해야 할 문제가 있고, 그것에 대해 도전을 할 때 가장 행복하다.", isRev: true },
   { id: 71, text: "나는 다른 사람에게 의존하는 것을 싫어한다.", isRev: true },
   { id: 72, text: "사람들은 결코 근본적으로 변화할 수 없다.", isRev: false },
   { id: 73, text: "나는 원칙대로 일을 다뤄야 한다고 생각한다.", isRev: false },
@@ -150,7 +162,7 @@ const subscales = [
   { name: "인정 욕구", items: [1, 10, 19, 24, 30, 46, 56, 64, 74] },
   { name: "개인적 완벽성", items: [2, 11, 20, 25, 31, 39, 47, 57, 65, 75] },
   { name: "비난 경향성", items: [3, 12, 26, 32, 48, 58, 66, 76] },
-  { name: "파국화", items: [4, 13, 27, 33, 49, 59, 67, 77] },
+  { name: "파국화", items: [4, 13, 27, 33, 40, 49, 59, 67, 77] },
   { name: "정서적 무책임감", items: [5, 14, 41, 50, 60, 68, 78] },
   { name: "과잉불안염려", items: [6, 15, 21, 34, 42, 51, 69, 79] },
   { name: "문제 회피", items: [7, 22, 28, 35, 43, 52, 70, 80] },
@@ -166,7 +178,7 @@ questions.forEach(q => {
   card.id = `q-${q.id}`;
   let opts = '';
   for(let v=1; v<=5; v++) {
-    opts += `<div class="opt-btn" id="opt-${q.id}-${v}" onclick="chooseOption(${q.id}, ${v})">${v}</div>`;
+    opts += `<button type="button" class="opt-btn" id="opt-${q.id}-${v}" aria-label="${q.id}번 문항 ${v}점" aria-pressed="false" onclick="chooseOption(${q.id}, ${v})">${v}</button>`;
   }
   card.innerHTML = `<div class="q-title">${q.id}. ${q.text}</div><div class="options">${opts}</div>`;
   surveyList.appendChild(card);
@@ -177,17 +189,17 @@ function chooseOption(qId, val) {
   userAnswers[qId] = val;
   for(let v=1; v<=5; v++) {
     const el = document.getElementById(`opt-${qId}-${v}`);
-    if(el) el.classList.remove('checked');
+    if(el) { el.classList.remove('checked'); el.setAttribute('aria-pressed', 'false'); }
   }
   document.getElementById(`opt-${qId}-${val}`).classList.add('checked');
+  document.getElementById(`opt-${qId}-${val}`).setAttribute('aria-pressed', 'true');
+  document.getElementById('answer-progress').textContent = `${Object.keys(userAnswers).length} / 83문항 응답`;
 }
 
-function quickFillForTesting() {
-  questions.forEach(q => {
-    const rand = Math.floor(Math.random() * 5) + 1;
-    chooseOption(q.id, rand);
-  });
-  alert('83문항이 모두 채워졌습니다. 맨 아래 [검사 제출 및 결과 확인]을 눌러주세요.');
+function startAssessment() {
+  document.getElementById('intro').style.display = 'none';
+  document.getElementById('assessment').style.display = 'block';
+  window.scrollTo(0, 0);
 }
 
 let topBelief = { name: "개인적 완벽성", avg: 4.2 };
@@ -222,20 +234,23 @@ function finishSurvey() {
     if(avg > highest.avg) { highest = { name: sub.name, avg: avg }; }
 
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${sub.name}</td><td>${sub.items.length}</td><td>${avg}</td><td>${avg>=3.5 ? '🔴 높음' : '🟢 양호'}</td>`;
+    tr.innerHTML = `<td>${sub.name}</td><td>${sub.items.length}</td><td>${avg}</td>`;
     tbody.appendChild(tr);
   });
 
   topBelief = highest;
-  localStorage.setItem('topBeliefName', topBelief.name);
-  localStorage.setItem('topBeliefAvg', topBelief.avg);
+  const select = document.getElementById('belief-select');
+  select.replaceChildren();
+  labels.forEach(name => { const option = document.createElement('option'); option.value = name; option.textContent = name; select.appendChild(option); });
+  select.value = highest.name;
 
-  document.getElementById('highest-alert-text').innerHTML = 
-    `현재 가장 두드러진 영역은 <strong>[${topBelief.name}]</strong> (평균 ${topBelief.avg}점)입니다.`;
+  document.getElementById('highest-alert-text').innerHTML =
+    `<strong>[${topBelief.name}]</strong> (평균 ${topBelief.avg}점). 이 점수만으로 문제나 진단을 뜻하지 않습니다.`;
 
   document.getElementById('result-area').style.display = 'block';
   document.getElementById('result-area').scrollIntoView({ behavior: 'smooth' });
 
+  if(typeof Chart === 'undefined') { document.querySelector('.chart-box').style.display = 'none'; return; }
   const ctx = document.getElementById('radarChart').getContext('2d');
   if(radarChartInstance) radarChartInstance.destroy();
   radarChartInstance = new Chart(ctx, {
@@ -256,6 +271,7 @@ function finishSurvey() {
 }
 
 function goToGeosa() {
+  sessionStorage.setItem('topBeliefName', document.getElementById('belief-select').value);
   window.location.href = "geosa.html";
 }
 </script>
